@@ -1,5 +1,6 @@
 import discord
-from discord.ext import commands 
+from discord.ext import commands
+from discord.ext.commands.core import command 
 from ext.useful import generate_embed
 
 cogs = ["ext.essential","ext.owner","ext.moderation","ext.error","ext.sql"]
@@ -83,5 +84,17 @@ class Owner(commands.Cog):
    await ctx.reply(embed=generate_embed("Logout","Logging out now...","Logout | Alone Bot"), mention_author=False, delete_after=5)
    await ctx.bot.close()
 
+  @commands.command(hidden=True)
+  @commands.is_owner()
+  async def cogsave(self, ctx):
+   await self.bot.load_extension(cogs)
+   await ctx.send("done")
+
+  @commands.command(hidden=True)
+  @command.is_owner()
+  async def devkill(self, ctx):
+   await ctx.send("cya")
+   await self.bot.close()
+ 
 def setup(bot):
   bot.add_cog(Owner(bot))
