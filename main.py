@@ -45,48 +45,44 @@ class Help(commands.HelpCommand):
     embed.add_field(name="Commands", value="\n".join(cog.get_commands()))
     await self.context.reply(embed=embed, mention_author=False)
 
-#class DeleteButton(discord.Button):
-#  def __init__(self):
-#    self.style = discord.ButtonStyle.red()
-#    self.label = "Delete"
 
 class AloneBot(commands.AutoShardedBot):
-  def __init__(self, *args, **kwargs):
-    super().__init__(command_prefix=("!a", "•"), *args, **kwargs)
-    self.token = os.getenv("token")
-    self.userblacklist: dict[int, str] = {}
-    self.afk: dict[int, str] = {}
-    self.maintenance = False
-    self.maintenance_reason = ""
-    self.db = 0
-    self.activity = discord.Game("with my Source Code")
-    self.owner_ids = [349373972103561218, 412734157819609090, 755055117773963476]
-    self.command_counter = 0
-    self.launch_time = datetime.utcnow()
-    self.support_server = "https://discord.gg/kFkAmqhm"
-    self.strip_after_prefix = True
-    self.case_insensitive = True
+    def __init__(self, *args, **kwargs):
+        super().__init__(command_prefix=("!a", "•"), *args, **kwargs)
+        self.token = os.getenv("token")
+        self.userblacklist: dict[int, str] = {}
+        self.afk: dict[int, str] = {}
+        self.maintenance = False
+        self.maintenance_reason = ""
+        self.db = 0
+        self.activity = discord.Game("with my Source Code")
+        self.owner_ids = [349373972103561218, 412734157819609090, 755055117773963476]
+        self.command_counter = 0
+        self.launch_time = datetime.utcnow()
+        self.support_server = "https://discord.gg/kFkAmqhm"
+        self.strip_after_prefix = True
+        self.case_insensitive = True
 
-  def generate_embed(self, ctx: commands.Context, title: str, content: str, color: Optional[int] = None):
-    embed = discord.Embed()
-    embed.title = title
-    embed.description = content
-    if color is None:
-      embed.color = discord.Color.random()
-    else:
-      embed.color = int(color, 16)
-    embed.set_footer(text=f"Command ran by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
-    embed.timestamp = datetime.utcnow()
-    return embed
+    def generate_embed(self, ctx: commands.Context, title: str, content: str, color: Optional[int] = None):
+        embed = discord.Embed()
+        embed.title = title
+        embed.description = content
+        if color is None:
+          embed.color = discord.Color.random()
+        else:
+          embed.color = int(color, 16)
+        embed.set_footer(text=f"Command ran by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+        embed.timestamp = ctx.message.created_at.utcnow()
+        return embed
 
-  def botmsgs(self, msg):
-    return msg.author == self.user
+    def botmsgs(self, msg):
+      return msg.author == self.user
 
 class BlacklistedError(commands.CheckFailure):
-  pass
+    ...
 
 class MaintenanceError(commands.CheckFailure):
-  pass
+    ...
 
 os.environ["JISHAKU_HIDE"] = "true"
 os.environ["JISHAKU_RETAIN"] = "true"
@@ -106,28 +102,30 @@ initial_extensions = [
   "ext.owner",
   "ext.utility",
 ]
+
 for cog in initial_extensions:
-  bot.load_extension(cog)
+    bot.load_extension(cog)
 
 @bot.after_invoke
-async def aftercount(ctx):
-  bot.command_counter += 1
+async def aftercount(ctx: commands.Context) -> None:
+    bot.command_counter += 1
 
 @bot.check
-def blacklist(ctx):
-  if ctx.author.id not in bot.userblacklist:
-    return True
-  else:
+def blacklist(ctx: commands.Context) -> Optional[bool]:
+    if ctx.author.id not in bot.userblacklist:
+        return True
+
     raise BlacklistedError
 
 @bot.check
-def maintenance(ctx):
-  if bot.maintenance is False:
-    return True
-  else:
-    if ctx.author.id in bot.ownerids:
-      return True
-    else:
-      raise MaintenanceError
+def maintenance(ctx) -> Optional[bool]:
+    if bot.maintenance is False:
+        return True
 
-bot.run(bot.token)
+    if ctx.author.id in bot.ownerids:
+        return True
+
+    raise MaintenanceError
+
+if __name__ == "__main__":
+    bot.run(bot.token)
