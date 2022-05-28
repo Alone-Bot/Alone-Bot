@@ -33,7 +33,6 @@ class Owner(commands.Cog):
 
   @blacklist.command()
   async def add(self, ctx, user: discord.Member, *, reason: str = "No reason provided"):
-    # db here
     self.bot.userblacklist[user.id] = reason
     await ctx.message.add_reaction("\U00002705")
 
