@@ -16,24 +16,24 @@ class Minecord(commands.Cog):
   @commands.command()
   @commands.cooldown(1, 4, commands.BucketType.user)
   async def mine(self, ctx):
-   table = await self.bot.db.fetchrow("SELECT * FROM minecord WHERE user_id = $1", ctx.author.id)
-   if not table:
-       await self.bot.db.execute("INSERT INTO minecord (user_id, wood, stone, obsidian, coal, iron, gold, redstone, lapis, diamond, emerald, quartz, coins, pickaxe, axe, pet) VALUES ($1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0)", ctx.author.id)
-       return await ctx.reply("I made a profile for you due to you not having one, if you did please contact my developer about it. Anyways welcome to Minecord!", mention_author=False)
-   pickaxe = table["pickaxe"]
-   stone = table["stone"]
-   coal = table["coal"]
-   iron =  table["iron"]
-   ironn = random.randint(0 + pickaxe, 0 + pickaxe)
-   ironnn = iron + ironn
-   coall = random.randint(5 + pickaxe, 25 + pickaxe)
-   coalll = coal + coall
-   stonee = random.randint(10 + pickaxe, 30 + pickaxe)
-   stoneee = stonee + stone
-   await self.bot.db.execute(f"UPDATE minecord SET stone = $1", stoneee)
-   await self.bot.db.execute(f"UPDATE minecord SET iron = $1", ironnn)
-   await self.bot.db.execute(f"UPDATE minecord SET coal = $1", coalll)
-   await ctx.reply(f"You mined {stonee} stone, {ironn} iron and {coalll} coal! Now you have {stoneee} stone, {coalll} coal and {ironnn} iron!", mention_author=False)
+    table = await self.bot.db.fetchrow("SELECT * FROM minecord WHERE user_id = $1", ctx.author.id)
+    if not table:
+      await self.bot.db.execute("INSERT INTO minecord (user_id, wood, stone, obsidian, coal, iron, gold, redstone, lapis, diamond, emerald, quartz, coins, pickaxe, axe, pet) VALUES ($1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0)", ctx.author.id)
+      return await ctx.reply("I made a profile for you due to you not having one, if you did please contact my developer about it. Anyways welcome to Minecord!", mention_author=False)
+    pickaxe = table["pickaxe"]
+    owned_stone = table["stone"]
+    owned_coal = table["coal"]
+    owned_iron =  table["iron"]
+    mined_iron = random.randint(0 + pickaxe, 0 + pickaxe)
+    iron = owned_iron + iron_mined
+    mined_coal = random.randint(5 + pickaxe, 25 + pickaxe)
+    coal = owned_coal + mined_coal
+    mined_stone = random.randint(10 + pickaxe, 30 + pickaxe)
+    stone = mined_stone + owned_stone
+    await self.bot.db.execute(f"UPDATE minecord SET stone = $1", stone)
+    await self.bot.db.execute(f"UPDATE minecord SET iron = $1", iron)
+    await self.bot.db.execute(f"UPDATE minecord SET coal = $1", coal)
+    await ctx.reply(f"You mined {mined_stone} stone, {mined_iron} iron and {mined_coal} coal! Now you have {stone} stone, {coal} coal and {iron} iron!", mention_author=False)
   
   @commands.command(aliases=["inv"])
   async def inventory(self, ctx):
